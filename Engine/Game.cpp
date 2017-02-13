@@ -28,7 +28,8 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	brd( gfx ),
 	rng( std::random_device()() ),
-	snek( {2,2} ),
+	snek({2,2}),
+	snek2({12,12}),
 	goal( rng,brd,snek )
 {
 	sndTitle.Play( 1.0f,1.0f );
@@ -54,34 +55,30 @@ void Game::UpdateModel()
 			{
 				for (int i = 0; i < brd.GetGridWidth() * brd.GetGridHeight() * posionPercentage; i++)
 				{
-					brd.SpawnPosion(rng, snek, goal);
+					brd.SpawnPoison(rng, snek, snek2, goal);
 				}
 				gameIsInitialized = true;
 			}
-			if( wnd.kbd.KeyIsPressed( VK_UP ) )
-			{
-				delta_loc = { 0,-1 };
-			}
-			else if( wnd.kbd.KeyIsPressed( VK_DOWN ) )
-			{
-				delta_loc = { 0,1 };
-			}
-			else if( wnd.kbd.KeyIsPressed( VK_LEFT ) )
-			{
-				delta_loc = { -1,0 };
-			}
-			else if( wnd.kbd.KeyIsPressed( VK_RIGHT ) )
-			{
-				delta_loc = { 1,0 };
-			}
+			// player 1
+			if (wnd.kbd.KeyIsPressed(VK_UP))             delta_loc = { 0,-1 };
+			else if( wnd.kbd.KeyIsPressed( VK_DOWN ) )   delta_loc = { 0,1 };
+			else if( wnd.kbd.KeyIsPressed( VK_LEFT ) )   delta_loc = { -1,0 };
+			else if( wnd.kbd.KeyIsPressed( VK_RIGHT ) )  delta_loc = { 1,0 };
+			//player 2
+			if (wnd.kbd.KeyIsPressed('W'))        delta_loc2 = { 0,-1 };
+			else if (wnd.kbd.KeyIsPressed('S'))   delta_loc2 = { 0,1 };
+			else if (wnd.kbd.KeyIsPressed('A'))   delta_loc2 = { -1,0 };
+			else if (wnd.kbd.KeyIsPressed('D'))   delta_loc2 = { 1,0 };
 
-			snekMoveCounter += dt * posionHit;
+			//player 1
+			snekMoveCounter += dt * poisonHit;
 			if( snekMoveCounter >= snekMovePeriod )
 			{
 				snekMoveCounter -= snekMovePeriod;
 				const Location next = snek.GetNextHeadLocation( delta_loc );
 				if( !brd.IsInsideBoard( next ) ||
 					snek.IsInTileExceptEnd( next ) ||
+					snek2.IsInTile(next) ||
 					brd.CheckForObstacle( next ) )
 				{
 					gameIsOver = true;
@@ -94,21 +91,67 @@ void Game::UpdateModel()
 					{
 						snek.GrowAndMoveBy( delta_loc );
 						goal.Respawn( rng,brd,snek );
-						brd.SpawnObstacle( rng,snek,goal );
+						for (int i = 0; i < 4; i++)
+						{
+							brd.SpawnObstacle(rng, snek, snek2, goal);
+						}
 						sfxEat.Play( rng,0.8f );
 					}
-					else if ( brd.CheckForPosion(next) )
+					else if ( brd.CheckForPoison(next) )
 					{
-						posionHit += 0.03;
-						brd.ReSpawnPosion(rng, snek, goal, next);
+						poisonHit += 0.03;
+						brd.ReSpawnPoison(rng, snek, snek2, goal, next);
+						snek.MoveBy(delta_loc);
 					}
+					else
 					{
 						snek.MoveBy( delta_loc );
 					}
 					sfxSlither.Play( rng,0.08f );
 				}
 			}
+			//player 2
+			snekMoveCounter2 += dt * poisonHit2;
+			if (snekMoveCounter2 >= snekMovePeriod2)
+			{
+				snekMoveCounter2 -= snekMovePeriod2;
+				const Location next2 = snek2.GetNextHeadLocation(delta_loc2);
+				if (!brd.IsInsideBoard(next2) ||
+					snek2.IsInTileExceptEnd(next2) ||
+					snek.IsInTile(next2) ||
+					brd.CheckForObstacle(next2))
+				{
+					gameIsOver = true;
+					sndFart.Play();
+					sndMusic.StopAll();
+				}
+				else
+				{
+					if (next2 == goal.GetLocation())
+					{
+						snek2.GrowAndMoveBy(delta_loc2);
+						goal.Respawn(rng, brd, snek2);
+						for (int i = 0; i < 4; i++)
+						{
+							brd.SpawnObstacle(rng, snek2, snek, goal);
+						}
+						sfxEat.Play(rng, 0.8f);
+					}
+					else if (brd.CheckForPoison(next2))
+					{
+						poisonHit2 += 0.03;
+						brd.ReSpawnPoison(rng, snek2, snek, goal, next2);
+						snek2.MoveBy(delta_loc2);
+					}
+					else
+					{
+						snek2.MoveBy(delta_loc2);
+					}
+					sfxSlither.Play(rng, 0.08f);
+				}
+			}
 			snekMovePeriod = std::max( snekMovePeriod - dt * snekSpeedupFactor,snekMovePeriodMin );
+			snekMovePeriod2 = std::max(snekMovePeriod2 - dt * snekSpeedupFactor2, snekMovePeriodMin2);
 		}
 	}
 	else
@@ -128,6 +171,7 @@ void Game::ComposeFrame()
 		brd.DrawPosion();
 		brd.DrawObstacles();
 		snek.Draw( brd );
+		snek2.Draw(brd);
 		goal.Draw( brd );
 		if( gameIsOver )
 		{

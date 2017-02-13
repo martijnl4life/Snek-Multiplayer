@@ -42,7 +42,7 @@ bool Board::CheckForObstacle( const Location & loc ) const
 	return hasObstacle[loc.y * width + loc.x];
 }
 
-void Board::SpawnObstacle( std::mt19937 & rng,const Snake & snake,const Goal& goal )
+void Board::SpawnObstacle( std::mt19937 & rng,const Snake & snake, const Snake& snake2, const Goal& goal )
 {
 	std::uniform_int_distribution<int> xDist( 0,GetGridWidth() - 1 );
 	std::uniform_int_distribution<int> yDist( 0,GetGridHeight() - 1 );
@@ -53,17 +53,17 @@ void Board::SpawnObstacle( std::mt19937 & rng,const Snake & snake,const Goal& go
 		newLoc.x = xDist( rng );
 		newLoc.y = yDist( rng );
 	}
-	while( snake.IsInTile( newLoc ) || CheckForObstacle( newLoc ) || goal.GetLocation() == newLoc );
+	while( snake.IsInTile( newLoc ) || snake2.IsInTile( newLoc ) || CheckForObstacle( newLoc ) || goal.GetLocation() == newLoc );
 
 	hasObstacle[newLoc.y * width + newLoc.x] = true;
 }
 
-bool Board::CheckForPosion(const Location & loc) const
+bool Board::CheckForPoison(const Location & loc) const
 {
-	return hasPosion[loc.y * width + loc.x];
+	return hasPoison[loc.y * width + loc.x];
 }
 
-void Board::SpawnPosion(std::mt19937 & rng, const Snake & snake, const Goal & goal)
+void Board::SpawnPoison(std::mt19937 & rng, const Snake & snake, const Snake& snake2, const Goal & goal)
 {
 	std::uniform_int_distribution<int> xDist(0, GetGridWidth() - 1);
 	std::uniform_int_distribution<int> yDist(0, GetGridHeight() - 1);
@@ -73,15 +73,15 @@ void Board::SpawnPosion(std::mt19937 & rng, const Snake & snake, const Goal & go
 	{
 		newLoc.x = xDist(rng);
 		newLoc.y = yDist(rng);
-	} while (snake.IsInTile(newLoc) || CheckForObstacle(newLoc) || goal.GetLocation() == newLoc || hasPosion[newLoc.y * width + newLoc.x]);
+	} while (snake.IsInTile(newLoc) || snake2.IsInTile(newLoc) || CheckForObstacle(newLoc) || goal.GetLocation() == newLoc || hasPoison[newLoc.y * width + newLoc.x]);
 
-	hasPosion[newLoc.y * width + newLoc.x] = true;
+	hasPoison[newLoc.y * width + newLoc.x] = true;
 }
 
-void Board::ReSpawnPosion(std::mt19937 & rng, const Snake & snake, const Goal & goal, const Location& loc)
+void Board::ReSpawnPoison(std::mt19937 & rng, const Snake & snake, const Snake& snake2, const Goal & goal, const Location& loc)
 {
-	hasPosion[loc.y * width + loc.x] = false;
-	SpawnPosion(rng, snake, goal);
+	hasPoison[loc.y * width + loc.x] = false;
+	SpawnPoison(rng, snake, snake2, goal);
 }
 
 void Board::DrawBorder()
@@ -121,7 +121,7 @@ void Board::DrawPosion()
 	{
 		for (int x = 0; x < width; x++)
 		{
-			if (CheckForPosion({ x,y }))
+			if (CheckForPoison({ x,y }))
 			{
 				DrawCell({ x,y }, posionColor);
 			}

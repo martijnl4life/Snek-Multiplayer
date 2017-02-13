@@ -13,16 +13,16 @@ public:
 	int GetGridHeight() const;
 	bool IsInsideBoard( const Location& loc ) const;
 	bool CheckForObstacle( const Location& loc ) const;
-	void SpawnObstacle( std::mt19937& rng,const class Snake& snake,const class Goal& goal );
-	bool CheckForPosion(const Location& loc) const;
-	void SpawnPosion(std::mt19937& rng, const class Snake& snake, const class Goal& goal);
-	void ReSpawnPosion(std::mt19937& rng, const class Snake& snake, const class Goal& goal, const Location& loc);
+	void SpawnObstacle( std::mt19937& rng,const class Snake& snake,const class Snake& snake2, const class Goal& goal );
+	bool CheckForPoison(const Location& loc) const;
+	void SpawnPoison(std::mt19937& rng, const class Snake& snake, const class Snake& snake2, const class Goal& goal);
+	void ReSpawnPoison(std::mt19937& rng, const class Snake& snake, const class Snake& snake2, const class Goal& goal, const Location& loc);
 	void DrawBorder();
 	void DrawObstacles();
 	void DrawPosion();
 private:
 	static constexpr Color borderColor = Colors::Blue;
-	static constexpr Color obstacleColor = Colors::Gray;
+	static constexpr Color obstacleColor = Colors::Cyan;
 	static constexpr Color posionColor = Colors::Magenta;
 	static constexpr int dimension = 15;
 	static constexpr int cellPadding = 1;
@@ -33,6 +33,6 @@ private:
 	static constexpr int x = 30;
 	static constexpr int y = 30;
 	bool hasObstacle[width * height] = { false };
-	bool hasPosion[width * height] = { false };
+	bool hasPoison[width * height] = { false };
 	Graphics& gfx;
 };

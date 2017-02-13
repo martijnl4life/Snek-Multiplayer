@@ -50,7 +50,9 @@ private:
 	/*  User Variables              */
 	Board brd;
 	Snake snek;
+	Snake snek2;
 	Location delta_loc = {1,0};
+	Location delta_loc2 = { 0,1 };
 	std::mt19937 rng;
 	FrameTimer ft;
 	Goal goal;
@@ -64,7 +66,13 @@ private:
 	float snekMoveCounter = 0.0f;
 	static constexpr float snekSpeedupFactor = 0.005f;
 	static constexpr float posionPercentage = 0.5f;
-	float posionHit = 1;
+	static constexpr float snekMovePeriodMin2 = 0.06f;
+	float snekMovePeriod2 = 0.4f;
+	float snekMoveCounter2 = 0.0f;
+	static constexpr float snekSpeedupFactor2 = 0.005f;
+	static constexpr float posionPercentage2 = 0.5f;
+	float poisonHit = 1;
+	float poisonHit2 = 1;
 	bool gameIsOver = false;
 	bool gameIsStarted = false;
 	bool gameIsInitialized = false;
