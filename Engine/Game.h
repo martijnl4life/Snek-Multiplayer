@@ -51,8 +51,8 @@ private:
 	Board brd;
 	Snake snek;
 	Snake snek2;
-	Location delta_loc = {1,0};
-	Location delta_loc2 = { 0,1 };
+	Location delta_loc = {0,1};
+	Location delta_loc2 = { 0,-1 };
 	std::mt19937 rng;
 	FrameTimer ft;
 	Goal goal;
@@ -73,6 +73,8 @@ private:
 	static constexpr float posionPercentage2 = 0.5f;
 	float poisonHit = 1;
 	float poisonHit2 = 1;
+	bool snekIsDead = false;
+	bool snek2IsDead = false;
 	bool gameIsOver = false;
 	bool gameIsStarted = false;
 	bool gameIsInitialized = false;

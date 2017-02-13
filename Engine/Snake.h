@@ -9,7 +9,7 @@ private:
 	class Segment
 	{
 	public:
-		void InitHead( const Location& loc );
+		void InitHead( const Location& loc, const Color& c);
 		void InitBody( Color c );
 		void Follow( const Segment& next );
 		void MoveBy( const Location& delta_loc );
@@ -20,16 +20,19 @@ private:
 		Color c;
 	};
 public:
-	Snake( const Location& loc );
+	Snake( const Location& loc, const Color& c);
+	void Respawn(const Location& loc);
 	void MoveBy( const Location& delta_loc );
 	Location GetNextHeadLocation( const Location& delta_loc ) const;
 	void GrowAndMoveBy( const Location& delta_loc );
 	void Draw( Board& brd ) const;
+	void Shrink();
 	bool IsInTileExceptEnd( const Location& target ) const;
 	bool IsInTile( const Location& target ) const;
+	void SetHeadColor(const Color& c);
 
 private:
-	static constexpr Color headColor = Colors::Yellow;
+	Color headColor;
 	static constexpr int nSegmentsMax = 100;
 	Segment segments[nSegmentsMax];
 	int nSegments = 1;

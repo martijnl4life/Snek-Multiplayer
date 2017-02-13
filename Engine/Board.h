@@ -17,6 +17,7 @@ public:
 	bool CheckForPoison(const Location& loc) const;
 	void SpawnPoison(std::mt19937& rng, const class Snake& snake, const class Snake& snake2, const class Goal& goal);
 	void ReSpawnPoison(std::mt19937& rng, const class Snake& snake, const class Snake& snake2, const class Goal& goal, const Location& loc);
+	void ResetBoard();
 	void DrawBorder();
 	void DrawObstacles();
 	void DrawPosion();

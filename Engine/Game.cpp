@@ -28,8 +28,8 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	brd( gfx ),
 	rng( std::random_device()() ),
-	snek({2,2}),
-	snek2({12,12}),
+	snek({5,5}, Colors::Blue),
+	snek2({43,30}, Colors::Yellow),
 	goal( rng,brd,snek )
 {
 	sndTitle.Play( 1.0f,1.0f );
@@ -37,7 +37,7 @@ Game::Game( MainWindow& wnd )
 
 void Game::Go()
 {
-	gfx.BeginFrame();	
+	gfx.BeginFrame();
 	UpdateModel();
 	ComposeFrame();
 	gfx.EndFrame();
@@ -51,6 +51,7 @@ void Game::UpdateModel()
 	{
 		if( !gameIsOver )
 		{
+			// initialize bs
 			if (!gameIsInitialized)
 			{
 				for (int i = 0; i < brd.GetGridWidth() * brd.GetGridHeight() * posionPercentage; i++)
@@ -59,18 +60,20 @@ void Game::UpdateModel()
 				}
 				gameIsInitialized = true;
 			}
-			// player 1
-			if (wnd.kbd.KeyIsPressed(VK_UP))             delta_loc = { 0,-1 };
-			else if( wnd.kbd.KeyIsPressed( VK_DOWN ) )   delta_loc = { 0,1 };
-			else if( wnd.kbd.KeyIsPressed( VK_LEFT ) )   delta_loc = { -1,0 };
-			else if( wnd.kbd.KeyIsPressed( VK_RIGHT ) )  delta_loc = { 1,0 };
-			//player 2
-			if (wnd.kbd.KeyIsPressed('W'))        delta_loc2 = { 0,-1 };
-			else if (wnd.kbd.KeyIsPressed('S'))   delta_loc2 = { 0,1 };
-			else if (wnd.kbd.KeyIsPressed('A'))   delta_loc2 = { -1,0 };
-			else if (wnd.kbd.KeyIsPressed('D'))   delta_loc2 = { 1,0 };
 
-			//player 1
+			// player 1 move
+			if (wnd.kbd.KeyIsPressed('W'))        delta_loc = { 0,-1 };
+			else if (wnd.kbd.KeyIsPressed('S'))   delta_loc = { 0,1 };
+			else if (wnd.kbd.KeyIsPressed('A'))   delta_loc = { -1,0 };
+			else if (wnd.kbd.KeyIsPressed('D'))   delta_loc = { 1,0 };
+
+			// player 2 move
+			if (wnd.kbd.KeyIsPressed(VK_UP))             delta_loc2 = { 0,-1 };
+			else if( wnd.kbd.KeyIsPressed( VK_DOWN ) )   delta_loc2 = { 0,1 };
+			else if( wnd.kbd.KeyIsPressed( VK_LEFT ) )   delta_loc2 = { -1,0 };
+			else if( wnd.kbd.KeyIsPressed( VK_RIGHT ) )  delta_loc2 = { 1,0 };
+
+			//player 1 logic
 			snekMoveCounter += dt * poisonHit;
 			if( snekMoveCounter >= snekMovePeriod )
 			{
@@ -82,6 +85,7 @@ void Game::UpdateModel()
 					brd.CheckForObstacle( next ) )
 				{
 					gameIsOver = true;
+					snekIsDead = true;
 					sndFart.Play();
 					sndMusic.StopAll();
 				}
@@ -110,7 +114,8 @@ void Game::UpdateModel()
 					sfxSlither.Play( rng,0.08f );
 				}
 			}
-			//player 2
+
+			//player 2 logic
 			snekMoveCounter2 += dt * poisonHit2;
 			if (snekMoveCounter2 >= snekMovePeriod2)
 			{
@@ -122,6 +127,7 @@ void Game::UpdateModel()
 					brd.CheckForObstacle(next2))
 				{
 					gameIsOver = true;
+					snek2IsDead = true;
 					sndFart.Play();
 					sndMusic.StopAll();
 				}
@@ -150,8 +156,32 @@ void Game::UpdateModel()
 					sfxSlither.Play(rng, 0.08f);
 				}
 			}
+
+			// time bs
 			snekMovePeriod = std::max( snekMovePeriod - dt * snekSpeedupFactor,snekMovePeriodMin );
 			snekMovePeriod2 = std::max(snekMovePeriod2 - dt * snekSpeedupFactor2, snekMovePeriodMin2);
+		}  
+
+			// gameover bs
+		else if (gameIsOver)
+		{
+			if (wnd.kbd.KeyIsPressed(VK_RETURN))
+			{
+				gameIsOver = false;
+				gameIsStarted = false;
+				gameIsInitialized = false;
+				snek2IsDead = false;
+				snekIsDead = false;
+				brd.ResetBoard();
+				snek.Shrink();
+				snek2.Shrink();
+				poisonHit = 1;
+				poisonHit2 = 1;
+				snek2.Respawn(Location{ 43,30 });
+				snek.Respawn(Location{ 5,5 });
+				delta_loc = Location{ 0,1 };
+				delta_loc2 = Location{ 0,-1 };
+			}
 		}
 	}
 	else
@@ -176,6 +206,14 @@ void Game::ComposeFrame()
 		if( gameIsOver )
 		{
 			SpriteCodex::DrawGameOver( 350,265,gfx );
+			if (snekIsDead)
+			{
+				gfx.DrawRect(40, 40, 120, 120, Colors::Yellow);
+			}
+			if (snek2IsDead)
+			{
+				gfx.DrawRect(40, 40, 120, 120, Colors::Blue);
+			}
 		}
 		brd.DrawBorder();
 	}

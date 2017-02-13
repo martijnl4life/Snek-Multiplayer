@@ -84,6 +84,15 @@ void Board::ReSpawnPoison(std::mt19937 & rng, const Snake & snake, const Snake& 
 	SpawnPoison(rng, snake, snake2, goal);
 }
 
+void Board::ResetBoard()
+{
+	for (int i = 0; i < width*height; i++)
+	{
+		hasObstacle[i] = false;
+		hasPoison[i] = false;
+	}
+}
+
 void Board::DrawBorder()
 {
 	const int top = y;

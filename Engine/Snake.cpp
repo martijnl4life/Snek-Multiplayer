@@ -1,7 +1,7 @@
 #include "Snake.h"
 #include <assert.h>
 
-Snake::Snake( const Location& loc )
+Snake::Snake( const Location& loc, const Color& c)
 {
 	constexpr int nBodyColors = 4;
 	constexpr Color bodyColors[nBodyColors] = {		
@@ -10,13 +10,19 @@ Snake::Snake( const Location& loc )
 		{ 18,160,48 },
 		{ 10,130,48 }
 	};
-		
+	headColor = c;
+
 	for( int i = 0; i < nSegmentsMax; ++i )
 	{
 		segments[i].InitBody( bodyColors[i % nBodyColors] );
 	}
 
-	segments[0].InitHead( loc );
+	segments[0].InitHead( loc , headColor);
+}
+
+void Snake::Respawn(const Location & loc)
+{
+	segments[0].InitHead(loc, headColor);
 }
 
 void Snake::MoveBy( const Location& delta_loc )
@@ -52,6 +58,11 @@ void Snake::Draw( Board & brd ) const
 	}
 }
 
+void Snake::Shrink()
+{
+	nSegments = 1;
+}
+
 bool Snake::IsInTileExceptEnd( const Location& target ) const
 {
 	for( int i = 0; i < nSegments - 1; ++i )
@@ -76,10 +87,16 @@ bool Snake::IsInTile( const Location& target ) const
 	return false;
 }
 
-void Snake::Segment::InitHead( const Location& in_loc )
+void Snake::SetHeadColor(const Color & c)
+{
+	headColor = c;
+}
+
+
+void Snake::Segment::InitHead( const Location& in_loc, const Color & color)
 {
 	loc = in_loc;
-	c = Snake::headColor;
+	c = color;
 }
 
 void Snake::Segment::InitBody( Color c_in )
