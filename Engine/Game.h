@@ -63,7 +63,10 @@ private:
 	float snekMovePeriod = 0.4f;
 	float snekMoveCounter = 0.0f;
 	static constexpr float snekSpeedupFactor = 0.005f;
+	static constexpr float posionPercentage = 0.5f;
+	float posionHit = 1;
 	bool gameIsOver = false;
 	bool gameIsStarted = false;
+	bool gameIsInitialized = false;
 	/********************************/
 };

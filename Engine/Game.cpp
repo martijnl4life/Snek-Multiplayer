@@ -50,6 +50,14 @@ void Game::UpdateModel()
 	{
 		if( !gameIsOver )
 		{
+			if (!gameIsInitialized)
+			{
+				for (int i = 0; i < brd.GetGridWidth() * brd.GetGridHeight() * posionPercentage; i++)
+				{
+					brd.SpawnPosion(rng, snek, goal);
+				}
+				gameIsInitialized = true;
+			}
 			if( wnd.kbd.KeyIsPressed( VK_UP ) )
 			{
 				delta_loc = { 0,-1 };
@@ -67,7 +75,7 @@ void Game::UpdateModel()
 				delta_loc = { 1,0 };
 			}
 
-			snekMoveCounter += dt;
+			snekMoveCounter += dt * posionHit;
 			if( snekMoveCounter >= snekMovePeriod )
 			{
 				snekMoveCounter -= snekMovePeriod;
@@ -89,7 +97,11 @@ void Game::UpdateModel()
 						brd.SpawnObstacle( rng,snek,goal );
 						sfxEat.Play( rng,0.8f );
 					}
-					else
+					else if ( brd.CheckForPosion(next) )
+					{
+						posionHit += 0.03;
+						brd.ReSpawnPosion(rng, snek, goal, next);
+					}
 					{
 						snek.MoveBy( delta_loc );
 					}
@@ -113,6 +125,8 @@ void Game::ComposeFrame()
 {
 	if( gameIsStarted )
 	{
+		brd.DrawPosion();
+		brd.DrawObstacles();
 		snek.Draw( brd );
 		goal.Draw( brd );
 		if( gameIsOver )
@@ -120,7 +134,6 @@ void Game::ComposeFrame()
 			SpriteCodex::DrawGameOver( 350,265,gfx );
 		}
 		brd.DrawBorder();
-		brd.DrawObstacles();
 	}
 	else
 	{

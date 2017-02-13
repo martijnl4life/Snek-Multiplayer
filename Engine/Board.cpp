@@ -58,6 +58,32 @@ void Board::SpawnObstacle( std::mt19937 & rng,const Snake & snake,const Goal& go
 	hasObstacle[newLoc.y * width + newLoc.x] = true;
 }
 
+bool Board::CheckForPosion(const Location & loc) const
+{
+	return hasPosion[loc.y * width + loc.x];
+}
+
+void Board::SpawnPosion(std::mt19937 & rng, const Snake & snake, const Goal & goal)
+{
+	std::uniform_int_distribution<int> xDist(0, GetGridWidth() - 1);
+	std::uniform_int_distribution<int> yDist(0, GetGridHeight() - 1);
+
+	Location newLoc;
+	do
+	{
+		newLoc.x = xDist(rng);
+		newLoc.y = yDist(rng);
+	} while (snake.IsInTile(newLoc) || CheckForObstacle(newLoc) || goal.GetLocation() == newLoc || hasPosion[newLoc.y * width + newLoc.x]);
+
+	hasPosion[newLoc.y * width + newLoc.x] = true;
+}
+
+void Board::ReSpawnPosion(std::mt19937 & rng, const Snake & snake, const Goal & goal, const Location& loc)
+{
+	hasPosion[loc.y * width + loc.x] = false;
+	SpawnPosion(rng, snake, goal);
+}
+
 void Board::DrawBorder()
 {
 	const int top = y;
@@ -84,6 +110,20 @@ void Board::DrawObstacles()
 			if( CheckForObstacle( { x,y } ) )
 			{
 				DrawCell( { x,y },obstacleColor );
+			}
+		}
+	}
+}
+
+void Board::DrawPosion()
+{
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			if (CheckForPosion({ x,y }))
+			{
+				DrawCell({ x,y }, posionColor);
 			}
 		}
 	}
