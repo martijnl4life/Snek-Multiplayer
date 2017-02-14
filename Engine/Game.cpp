@@ -91,10 +91,9 @@ void Game::UpdateModel()
 				}
 				else
 				{
-					if( next == goal.GetLocation() )
+					if( next == goal.CompareLocGrowRespawn(rng,brd,snek,next) )
 					{
 						snek.GrowAndMoveBy( delta_loc );
-						goal.Respawn( rng,brd,snek );
 						for (int i = 0; i < 4; i++)
 						{
 							brd.SpawnObstacle(rng, snek, snek2, goal);
@@ -133,10 +132,9 @@ void Game::UpdateModel()
 				}
 				else
 				{
-					if (next2 == goal.GetLocation())
+					if (next2 == goal.CompareLocGrowRespawn(rng,brd,snek2,next2))
 					{
 						snek2.GrowAndMoveBy(delta_loc2);
-						goal.Respawn(rng, brd, snek2);
 						for (int i = 0; i < 4; i++)
 						{
 							brd.SpawnObstacle(rng, snek2, snek, goal);

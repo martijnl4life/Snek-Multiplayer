@@ -53,7 +53,7 @@ void Board::SpawnObstacle( std::mt19937 & rng,const Snake & snake, const Snake& 
 		newLoc.x = xDist( rng );
 		newLoc.y = yDist( rng );
 	}
-	while( snake.IsInTile( newLoc ) || snake2.IsInTile( newLoc ) || CheckForObstacle( newLoc ) || goal.GetLocation() == newLoc );
+	while( snake.IsInTile( newLoc ) || snake2.IsInTile( newLoc ) || CheckForObstacle( newLoc ) || goal.CompareLocGrow(newLoc) == newLoc );
 
 	hasObstacle[newLoc.y * width + newLoc.x] = true;
 }
@@ -73,7 +73,7 @@ void Board::SpawnPoison(std::mt19937 & rng, const Snake & snake, const Snake& sn
 	{
 		newLoc.x = xDist(rng);
 		newLoc.y = yDist(rng);
-	} while (snake.IsInTile(newLoc) || snake2.IsInTile(newLoc) || CheckForObstacle(newLoc) || goal.GetLocation() == newLoc || hasPoison[newLoc.y * width + newLoc.x]);
+	} while (snake.IsInTile(newLoc) || snake2.IsInTile(newLoc) || CheckForObstacle(newLoc) || goal.CompareLocGrow(newLoc) == newLoc || hasPoison[newLoc.y * width + newLoc.x]);
 
 	hasPoison[newLoc.y * width + newLoc.x] = true;
 }
