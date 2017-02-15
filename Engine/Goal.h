@@ -10,29 +10,37 @@ private:
 	class Grow 
 	{
 	public:
-		void SetLocation(Location& loc);
+		void SetLocation(Location& loc);											// if you add a new goal, remember to update the functions in board too
 		const Location& GetLocation() const;
 		void DrawG(Board& brd) const;
 	private:
-		static constexpr Color cg = Colors::Red;
+		static constexpr Color cg = Colors::Green;
 		Location locG;
 	};
-//private:
-//	class SlowDown
-//	{
-//	public:
-//	private:
-//		Location loc;
-//	};
+private:
+	class SlowDown
+	{
+	public:
+		void SetLocation(Location& loc);
+		const Location& GetLocation() const;
+		void DrawS(Board& brd) const;
+	private:
+		static constexpr Color cs = Colors::Blue;
+		Location locS;
+	};
 public:
 	Goal() = default;
 	Goal( std::mt19937& rng,const Board& brd,const Snake& snake );
-	void Draw( Board& brd ) const;
+	void DrawGrow( Board& brd ) const;
+	void DrawSlow(Board& brd) const;
 	Location CompareLocGrowRespawn(std::mt19937 & rng, const Board & brd, const Snake & snake, const Location loc);
 	Location CompareLocGrow(const Location loc) const;
+	Location CompareLocSlowRespawn(std::mt19937 & rng, const Board & brd, const Snake & snake, const Location loc);
+	Location CompareLocSlow(const Location loc) const;
 private:
 	static constexpr Color c = Colors::Red;
 	static constexpr int growN = 10;
-	Location loc;
+	static constexpr int slowN = 2;
 	Grow grow[growN];
+	SlowDown slow[slowN];
 };

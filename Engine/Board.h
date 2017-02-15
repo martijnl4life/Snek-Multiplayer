@@ -23,7 +23,7 @@ public:
 	void DrawPosion();
 private:
 	static constexpr Color borderColor = Colors::Blue;
-	static constexpr Color obstacleColor = Colors::Cyan;
+	static constexpr Color obstacleColor = Colors::Gray;
 	static constexpr Color posionColor = Colors::Magenta;
 	static constexpr int dimension = 15;
 	static constexpr int cellPadding = 1;

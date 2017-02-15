@@ -15,15 +15,40 @@ Goal::Goal( std::mt19937 & rng,const Board & brd,const Snake & snake )
 		} while (snake.IsInTile(newLoc));
 		grow[i].SetLocation(newLoc);
 	}
+	for (int i = 0; i < slowN; i++)
+	{
+		std::uniform_int_distribution<int> xDist(0, brd.GetGridWidth() - 1);
+		std::uniform_int_distribution<int> yDist(0, brd.GetGridHeight() - 1);
+
+		Location newLoc;
+		do
+		{
+			newLoc.x = xDist(rng);
+			newLoc.y = yDist(rng);
+		} while (snake.IsInTile(newLoc));
+		slow[i].SetLocation(newLoc);
+	}
 }
 
-void Goal::Draw( Board & brd ) const
+void Goal::DrawGrow( Board & brd ) const
 {
 	for (int i = 0; i < growN; i++)
 	{
 		grow[i].DrawG(brd);
 	}
 }
+
+void Goal::DrawSlow(Board & brd) const
+{
+	for (int i = 0; i < slowN; i++)
+	{
+		slow[i].DrawS(brd);
+	}
+}
+
+
+
+// ------------------------------ Grow Logic ------------------------------ \\
 
 Location Goal::CompareLocGrowRespawn(std::mt19937 & rng, const Board & brd, const Snake & snake, const Location loc)
 {
@@ -46,7 +71,7 @@ Location Goal::CompareLocGrowRespawn(std::mt19937 & rng, const Board & brd, cons
 			break;
 		}
 	}
-	return Location{ -1,-1 };
+	return Location{ -1,-1 }; // none valid location so always false;
 }
 
 Location Goal::CompareLocGrow(const Location loc) const
@@ -55,15 +80,12 @@ Location Goal::CompareLocGrow(const Location loc) const
 	{
 		if (loc == grow[i].GetLocation())
 		{
-			Location oldLoc = grow[i].GetLocation();;
-			return oldLoc;
+			return grow[i].GetLocation();
 			break;
 		}
 	}
-	return Location{ -1,-1 };
+	return Location{ -1,-1 }; // none valid location so always false;
 }
-
-// ------------------------------ Grow block ------------------------------ \\
 
 void Goal::Grow::SetLocation(Location & loc)
 {
@@ -78,4 +100,57 @@ const Location & Goal::Grow::GetLocation() const
 void Goal::Grow::DrawG(Board & brd) const
 {
 	brd.DrawCell(locG,cg);
+}
+// ------------------------------ Slow Logic ------------------------------ \\
+
+Location Goal::CompareLocSlowRespawn(std::mt19937 & rng, const Board & brd, const Snake & snake, const Location loc)
+{
+	for (int i = 0; i < slowN; i++)
+	{
+		if (loc == slow[i].GetLocation())
+		{
+			Location oldLoc = slow[i].GetLocation();;
+			std::uniform_int_distribution<int> xDist(0, brd.GetGridWidth() - 1);
+			std::uniform_int_distribution<int> yDist(0, brd.GetGridHeight() - 1);
+
+			Location newLoc;
+			do
+			{
+				newLoc.x = xDist(rng);
+				newLoc.y = yDist(rng);
+			} while (snake.IsInTile(newLoc));
+			slow[i].SetLocation(newLoc);
+			return oldLoc;
+			break;
+		}
+	}
+	return Location{ -1,-1 }; // none valid location so always false;
+}
+
+Location Goal::CompareLocSlow(const Location loc) const
+{
+	for (int i = 0; i < slowN; i++)
+	{
+		if (loc == slow[i].GetLocation())
+		{
+			return slow[i].GetLocation();;
+			break;
+		}
+	}
+	return Location{ -1,-1 }; // none valid location so always false;
+}
+
+void Goal::SlowDown::SetLocation(Location & loc)
+{
+	locS = loc;
+}
+
+const Location & Goal::SlowDown::GetLocation() const
+{
+	return locS;
+}
+
+void Goal::SlowDown::DrawS(Board & brd) const
+{
+	brd.DrawCell(locS, cs);
 }

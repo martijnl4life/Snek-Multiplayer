@@ -28,7 +28,7 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd ),
 	brd( gfx ),
 	rng( std::random_device()() ),
-	snek({5,5}, Colors::Blue),
+	snek({5,5}, Colors::Red),
 	snek2({43,30}, Colors::Yellow),
 	goal( rng,brd,snek )
 {
@@ -100,6 +100,18 @@ void Game::UpdateModel()
 						}
 						sfxEat.Play( rng,0.8f );
 					}
+					else if(next == goal.CompareLocSlowRespawn(rng,brd,snek,next))
+					{
+						for (int i = 0; i < 4; i++)
+						{
+							if (poisonHit > 2)
+							{
+								poisonHit -= 2;
+							}
+							brd.SpawnObstacle(rng, snek, snek2, goal);
+						}
+						sfxEat.Play(rng, 0.8f);
+					}
 					else if ( brd.CheckForPoison(next) )
 					{
 						poisonHit += 0.03;
@@ -138,6 +150,18 @@ void Game::UpdateModel()
 						for (int i = 0; i < 4; i++)
 						{
 							brd.SpawnObstacle(rng, snek2, snek, goal);
+						}
+						sfxEat.Play(rng, 0.8f);
+					}
+					else if (next2 == goal.CompareLocSlowRespawn(rng, brd, snek2, next2))
+					{
+						for (int i = 0; i < 4; i++)
+						{
+							if (poisonHit2 > 2)
+							{
+								poisonHit2 -= 2;
+							}
+							brd.SpawnObstacle(rng, snek, snek2, goal);
 						}
 						sfxEat.Play(rng, 0.8f);
 					}
@@ -200,17 +224,20 @@ void Game::ComposeFrame()
 		brd.DrawObstacles();
 		snek.Draw( brd );
 		snek2.Draw(brd);
-		goal.Draw( brd );
+		goal.DrawGrow( brd );
+		goal.DrawSlow(brd);
 		if( gameIsOver )
 		{
 			SpriteCodex::DrawGameOver( 350,265,gfx );
 			if (snekIsDead)
 			{
+				// player 2 wins
 				gfx.DrawRect(40, 40, 120, 120, Colors::Yellow);
 			}
 			if (snek2IsDead)
 			{
-				gfx.DrawRect(40, 40, 120, 120, Colors::Blue);
+				// player 1 wins
+				gfx.DrawRect(40, 40, 120, 120, Colors::Red);
 			}
 		}
 		brd.DrawBorder();
