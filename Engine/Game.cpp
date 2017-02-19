@@ -62,16 +62,16 @@ void Game::UpdateModel()
 			}
 
 			// player 1 move
-			if (wnd.kbd.KeyIsPressed('W'))        delta_loc = { 0,-1 };
-			else if (wnd.kbd.KeyIsPressed('S'))   delta_loc = { 0,1 };
-			else if (wnd.kbd.KeyIsPressed('A'))   delta_loc = { -1,0 };
-			else if (wnd.kbd.KeyIsPressed('D'))   delta_loc = { 1,0 };
+			if      (delta_loc != Location{0, 1})   if (wnd.kbd.KeyIsPressed('W'))   delta_loc = { 0,-1 };
+			if (delta_loc != Location{ 0,-1 })	if (wnd.kbd.KeyIsPressed('S'))   delta_loc = { 0,1 };
+			if (delta_loc != Location{1,0})	if (wnd.kbd.KeyIsPressed('A'))   delta_loc = { -1,0 };
+			if (delta_loc != Location{-1,0})   if (wnd.kbd.KeyIsPressed('D'))   delta_loc = { 1,0 };
 
 			// player 2 move
-			if (wnd.kbd.KeyIsPressed(VK_UP))             delta_loc2 = { 0,-1 };
-			else if( wnd.kbd.KeyIsPressed( VK_DOWN ) )   delta_loc2 = { 0,1 };
-			else if( wnd.kbd.KeyIsPressed( VK_LEFT ) )   delta_loc2 = { -1,0 };
-			else if( wnd.kbd.KeyIsPressed( VK_RIGHT ) )  delta_loc2 = { 1,0 };
+			if      (delta_loc2 != Location{ 0, 1 })   if (wnd.kbd.KeyIsPressed(VK_UP))   delta_loc2 = { 0,-1 };
+			if (delta_loc2 != Location{ 0,-1 })   if (wnd.kbd.KeyIsPressed(VK_DOWN))   delta_loc2 = { 0,1 };
+			if (delta_loc2 != Location{ 1,0 })	   if (wnd.kbd.KeyIsPressed(VK_LEFT))   delta_loc2 = { -1,0 };
+			if (delta_loc2 != Location{ -1,0 })   if (wnd.kbd.KeyIsPressed(VK_RIGHT))   delta_loc2 = { 1,0 };
 
 			//player 1 logic
 			snekMoveCounter += dt * poisonHit;
@@ -111,6 +111,7 @@ void Game::UpdateModel()
 							brd.SpawnObstacle(rng, snek, snek2, goal);
 						}
 						sfxEat.Play(rng, 0.8f);
+						snek.MoveBy(delta_loc);
 					}
 					else if ( brd.CheckForPoison(next) )
 					{
@@ -164,6 +165,7 @@ void Game::UpdateModel()
 							brd.SpawnObstacle(rng, snek, snek2, goal);
 						}
 						sfxEat.Play(rng, 0.8f);
+						snek2.MoveBy(delta_loc2);
 					}
 					else if (brd.CheckForPoison(next2))
 					{
@@ -199,6 +201,8 @@ void Game::UpdateModel()
 				snek2.Shrink();
 				poisonHit = 1;
 				poisonHit2 = 1;
+				snekMovePeriod = 0.4f;
+				snekMovePeriod2 = 0.4f;
 				snek2.Respawn(Location{ 43,30 });
 				snek.Respawn(Location{ 5,5 });
 				delta_loc = Location{ 0,1 };

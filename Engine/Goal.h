@@ -39,8 +39,8 @@ public:
 	Location CompareLocSlow(const Location loc) const;
 private:
 	static constexpr Color c = Colors::Red;
-	static constexpr int growN = 10;
-	static constexpr int slowN = 2;
+	static constexpr int growN = 20;
+	static constexpr int slowN = 8;
 	Grow grow[growN];
 	SlowDown slow[slowN];
 };

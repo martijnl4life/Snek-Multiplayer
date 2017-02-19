@@ -65,12 +65,11 @@ private:
 	float snekMovePeriod = 0.4f;
 	float snekMoveCounter = 0.0f;
 	static constexpr float snekSpeedupFactor = 0.005f;
-	static constexpr float posionPercentage = 0.5f;
+	static constexpr float posionPercentage = 0.2f;
 	static constexpr float snekMovePeriodMin2 = 0.06f;
 	float snekMovePeriod2 = 0.4f;
 	float snekMoveCounter2 = 0.0f;
 	static constexpr float snekSpeedupFactor2 = 0.005f;
-	static constexpr float posionPercentage2 = 0.5f;
 	float poisonHit = 1;
 	float poisonHit2 = 1;
 	bool snekIsDead = false;
